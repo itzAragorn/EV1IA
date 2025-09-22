@@ -1,0 +1,11 @@
+pandas
+numpy
+langchain
+langchain-community
+langchain-openai
+chromadb
+fastapi
+uvicorn
+python-dotenv
+streamlit
+requests
