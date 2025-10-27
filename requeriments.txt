@@ -1,11 +1,31 @@
+# Dependencies básicas
 pandas
 numpy
+requests
+
+# FastAPI y Streamlit
+fastapi
+uvicorn
+streamlit
+python-dotenv
+
+# LangChain y componentes
 langchain
 langchain-community
 langchain-openai
+langchain-experimental
+
+# Vector Database
 chromadb
-fastapi
-uvicorn
-python-dotenv
-streamlit
-requests
+
+# Agentes y Orquestación
+crewai
+crewai-tools
+
+# Observabilidad y Tracing
+langsmith
+
+# Utilidades adicionales para agentes avanzados
+wikipedia
+beautifulsoup4
+lxml
