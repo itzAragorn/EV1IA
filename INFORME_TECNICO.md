@@ -11,30 +11,50 @@
 El presente trabajo desarrolla un sistema avanzado de agentes inteligentes para la empresa CleanPro, implementando automatización organizacional mediante tecnologías de IA. El sistema integra múltiples frameworks especializados (LangChain, CrewAI) para crear agentes capaces de consulta, escritura, razonamiento y planificación adaptativa.
 
 ### 1.2 Objetivos Específicos
+
+#### Resultados de Aprendizaje 2 (RA2)
 - **IL2.1**: Construir agentes funcionales con herramientas integradas usando frameworks específicos (LangChain + CrewAI)
 - **IL2.2**: Configurar sistemas de memoria para continuidad en tareas prolongadas (memoria híbrida adaptativa)
 - **IL2.3**: Implementar estrategias de planificación y toma de decisiones adaptativas (planificación dinámica + multi-agente)
 - **IL2.4**: Documentar el diseño e integración de componentes del sistema (documentación técnica completa)
 
+#### Resultados de Aprendizaje 3 (RA3)
+- **IL3.1**: Implementar sistemas de observabilidad para monitoreo de agentes (logging, métricas, rendimiento)
+- **IL3.2**: Desarrollar trazabilidad completa de interacciones (traces, conversaciones, análisis)
+- **IL3.3**: Integrar seguridad y ética en agentes de IA (validación, filtros éticos, rate limiting)
+- **IL3.4**: Garantizar escalabilidad del sistema (caché, balanceo de carga, monitoreo de recursos)
+
 ### 1.3 Resultados Obtenidos
+
+#### Funcionalidades RA2
 - ✅ **Sistema completamente funcional** con interfaz web interactiva
 - ✅ **6 herramientas especializadas** integradas en ambos frameworks  
 - ✅ **Memoria adaptativa** que cambia estrategia automáticamente
 - ✅ **Sistema multi-agente** con 4 agentes especializados coordinados
-- ✅ **API REST completa** con 12 endpoints organizados
-- ✅ **Interfaz web moderna** con tema oscuro personalizado
+- ✅ **API REST completa** con endpoints organizados
+
+#### Funcionalidades RA3
+- ✅ **Sistema de observabilidad completo** con logging estructurado, métricas en tiempo real y monitoreo de rendimiento
+- ✅ **Trazabilidad integral** con tracking de traces, conversaciones y análisis de flujos
+- ✅ **Seguridad robusta** con validación de entradas, guardianes éticos y rate limiting
+- ✅ **Escalabilidad implementada** con sistema de caché, balanceo de carga y monitoreo de recursos
+- ✅ **API simplificada** integrando todos los módulos RA1, RA2 y RA3 de manera coherente
+- ✅ **Interfaz web moderna** con tema oscuro personalizado y múltiples modos de operación
 
 ## 2. Arquitectura del Sistema
 
 ### 2.1 Diseño General
-El sistema implementa una arquitectura modular de 6 capas:
+El sistema implementa una arquitectura modular de 9 capas:
 
 1. **Capa de Presentación**: Interfaz Streamlit con múltiples modos
 2. **Capa de API**: FastAPI con endpoints RESTful  
 3. **Capa de Agentes**: LangChain individual + CrewAI multi-agente
 4. **Capa de Herramientas**: RAG, escritura, razonamiento especializadas
 5. **Capa de Memoria**: Sistema híbrido Buffer/Window/Summary
-6. **Capa de Datos**: ChromaDB + CSV + JSON persistente
+6. **Capa de Observabilidad**: Logging, métricas y monitoreo de rendimiento (RA3 - IL3.1)
+7. **Capa de Trazabilidad**: Traces, conversaciones y análisis de flujos (RA3 - IL3.2)
+8. **Capa de Seguridad**: Validación, ética y rate limiting (RA3 - IL3.3)
+9. **Capa de Escalabilidad**: Caché, balanceo y monitoreo de recursos (RA3 - IL3.4)
 
 ### 2.2 Componentes Principales
 
@@ -121,29 +141,145 @@ Implementado en `src/agents/planning/adaptive_planning.py`:
 3. **Adaptación contextual**: Ajuste por recursos limitados
 4. **Generación de reportes**: Documentación ejecutiva
 
-## 5. Integración y Orquestación de Componentes
+## 5. Módulos de Producción y Calidad (RA3)
 
-### 5.1 Flujo de Integración
+### 5.1 Sistema de Observabilidad (IL3.1)
+
+#### 5.1.1 Logging Estructurado
+Implementado en `src/observability/logger_config.py`:
+- **Niveles jerárquicos**: DEBUG, INFO, WARNING, ERROR, CRITICAL
+- **Formato estructurado**: Timestamps, niveles, contexto y metadata
+- **Rotación automática**: Archivos de log con límite de tamaño
+- **Handlers múltiples**: Consola + archivo para trazabilidad completa
+
+#### 5.1.2 Colección de Métricas
+Implementado en `src/observability/metrics_collector.py`:
+- **Contadores**: Tracking de solicitudes, errores y operaciones
+- **Histogramas**: Distribución de tiempos de respuesta
+- **Gauges**: Estado actual del sistema (memoria, CPU, conexiones)
+- **Métricas personalizadas**: Por tipo de operación y usuario
+
+#### 5.1.3 Monitoreo de Rendimiento
+Implementado en `src/observability/performance_monitor.py`:
+- **Decoradores de medición**: `@measure_time` para funciones críticas
+- **Alertas automáticas**: Notificación cuando excede umbrales
+- **Análisis de bottlenecks**: Identificación de operaciones lentas
+- **Estadísticas agregadas**: Promedio, min, max, percentiles
+
+### 5.2 Sistema de Trazabilidad (IL3.2)
+
+#### 5.2.1 Gestión de Traces
+Implementado en `src/traceability/trace_manager.py`:
+- **Traces completas**: UUID único, operación, timestamps, duración
+- **Spans anidados**: Jerarquía de sub-operaciones dentro de traces
+- **Estados**: running, success, error con metadata detallada
+- **Persistencia**: Exportación JSON para análisis posterior
+
+#### 5.2.2 Tracking de Conversaciones
+Implementado en `src/traceability/conversation_tracker.py`:
+- **Turnos conversacionales**: Usuario + agente con timestamps
+- **Herramientas utilizadas**: Registro de tools invocadas por turno
+- **Sesiones completas**: Agrupación por conversation_id
+- **Análisis estadístico**: Duración, turnos promedio, herramientas más usadas
+
+### 5.3 Sistema de Seguridad y Ética (IL3.3)
+
+#### 5.3.1 Validación de Entradas
+Implementado en `src/security/input_validator.py`:
+- **Patrones peligrosos**: Detección de XSS, SQL injection, code injection
+- **Sanitización**: Escape de HTML y caracteres especiales
+- **Límites de longitud**: Protección contra DoS por payloads grandes
+- **Niveles de seguridad**: LOW, MEDIUM, HIGH, CRITICAL configurables
+
+#### 5.3.2 Guardián Ético
+Implementado en `src/security/ethical_guard.py`:
+- **Categorías bloqueadas**: Violencia, ilegal, discriminación, privacidad, manipulación
+- **Patrones regex**: Detección de contenido inapropiado en español
+- **Respuestas éticas**: Mensajes apropiados según categoría de violación
+- **Log de violaciones**: Tracking de intentos inapropiados para análisis
+
+#### 5.3.3 Rate Limiting
+Implementado en `src/security/rate_limiter.py`:
+- **Límites por usuario**: 60 req/min general, 30 queries/min, 10 generaciones/min
+- **Ventanas deslizantes**: Time window de 60 segundos
+- **Estadísticas por usuario**: Requests actuales, límites, restantes
+- **Reset manual**: Capacidad de resetear límites por usuario
+
+### 5.4 Sistema de Escalabilidad (IL3.4)
+
+#### 5.4.1 Gestión de Caché
+Implementado en `src/scalability/cache_manager.py`:
+- **Caché en memoria**: Almacenamiento rápido con TTL configurable
+- **Estrategia LRU**: Expulsión de items menos usados cuando está lleno
+- **Estadísticas**: Hit rate, miss rate, tamaño actual
+- **Operaciones**: get, set, delete, clear con tracking automático
+
+#### 5.4.2 Balanceo de Carga
+Implementado en `src/scalability/load_balancer.py`:
+- **Estrategias múltiples**: Round-robin, least-connections, weighted
+- **Health checks**: Verificación periódica de disponibilidad
+- **Distribución inteligente**: Asignación según carga y disponibilidad
+- **Failover automático**: Redireccionamiento a instancias saludables
+
+#### 5.4.3 Monitoreo de Recursos
+Implementado en `src/scalability/resource_monitor.py`:
+- **Métricas del sistema**: CPU, memoria, disco, red
+- **Alertas de recursos**: Notificación cuando excede umbrales (80% CPU/memoria)
+- **Historial de uso**: Tracking temporal para análisis de tendencias
+- **Recomendaciones**: Sugerencias de escalado según patrones de uso
+
+## 6. Integración y Orquestación de Componentes
+
+### 6.1 Flujo de Integración
 El sistema demuestra integración completa mediante:
 
 1. **Agente individual**: Análisis inicial con memoria conversacional
 2. **Sistema multi-agente**: Planificación estratégica colaborativa
 3. **Planificación adaptativa**: Implementación con ajustes dinámicos  
-4. **Generación de reportes**: Síntesis integral de resultados
+4. **Módulos RA3**: Observabilidad, trazabilidad, seguridad y escalabilidad integrados
+5. **Generación de reportes**: Síntesis integral de resultados
 
-### 5.2 API y Interfaces
-- **FastAPI**: 12 endpoints para todos los sistemas
-- **Streamlit**: 3 modos de operación (Individual, Multi-agente, Planificación)
-- **Demostraciones**: Script automatizado de casos de uso
+### 6.2 API Unificada (app_simple.py)
+La API simplificada integra todos los módulos de manera coherente:
 
-### 5.3 Patrones de Diseño Implementados
+#### Endpoints RA1 (RAG):
+- `POST /rag/query`: Consulta con caché, validación y seguridad
+
+#### Endpoints RA2 (Conversación):
+- `POST /chat`: Chat conversacional con memoria y trazabilidad
+
+#### Endpoints RA3 (Observabilidad):
+- `GET /metrics`: Métricas del sistema en tiempo real
+- `GET /traces`: Historial de traces ejecutadas
+- `GET /conversations`: Resumen de conversaciones
+
+#### Endpoints RA3 (Seguridad):
+- `POST /security/validate`: Validación de entradas
+- `POST /security/ethical-check`: Verificación ética de contenido
+
+#### Endpoints RA3 (Escalabilidad):
+- `GET /cache/stats`: Estadísticas de caché
+- `GET /system/health`: Estado de salud del sistema
+
+#### Endpoints Generales:
+- `GET /health`: Health check básico
+- `GET /`: Información de la API
+
+### 6.3 Interfaz Streamlit
+- **3 modos de operación**: Individual (con memoria), Multi-agente, Planificación
+- **Integración RA3**: Visualización de trace IDs, métricas de sesión
+- **Tema oscuro profesional**: Experiencia optimizada para desarrollo
+
+### 6.4 Patrones de Diseño Implementados
 - **Factory Pattern**: Creación de agentes y herramientas
 - **Strategy Pattern**: Estrategias de memoria y adaptación  
 - **Observer Pattern**: Adaptación contextual en planificación
+- **Singleton Pattern**: Instancias globales de módulos RA3
+- **Decorator Pattern**: Monitoreo de rendimiento con `@measure_time`
 
-## 6. Resultados y Validación
+## 7. Resultados y Validación
 
-### 6.1 Funcionalidades Validadas
+### 7.1 Funcionalidades Validadas - RA2
 
 #### IL2.1 - Agentes Funcionales: ✅
 - Integración exitosa de 6 herramientas especializadas
@@ -168,23 +304,56 @@ El sistema demuestra integración completa mediante:
 - Arquitectura de componentes explicada detalladamente  
 - Orquestación de sistemas funcionando integralmente
 
-### 6.2 Casos de Uso Organizacionales
+### 7.2 Funcionalidades Validadas - RA3
+
+#### IL3.1 - Observabilidad: ✅
+- **Logging estructurado** con rotación y niveles jerárquicos funcionando
+- **Métricas en tiempo real** de solicitudes, errores y rendimiento
+- **Monitoreo de rendimiento** con decoradores y alertas automáticas
+- **Demo completo** en `demo_ra3_simple.py` validando todas las funciones
+
+#### IL3.2 - Trazabilidad: ✅
+- **Gestión de traces** con UUID, timestamps y estados
+- **Tracking de conversaciones** por sesión con metadata completa
+- **Análisis estadístico** de flujos y herramientas más usadas
+- **Persistencia JSON** para auditoría y análisis posterior
+
+#### IL3.3 - Seguridad y Ética: ✅
+- **Validación robusta** detectando XSS, SQL injection y código malicioso
+- **Guardián ético** bloqueando contenido inapropiado en 5 categorías
+- **Rate limiting** por usuario con ventanas deslizantes de 60s
+- **Sanitización automática** de entradas con escape de HTML
+
+#### IL3.4 - Escalabilidad: ✅
+- **Sistema de caché** LRU con TTL y estadísticas de hit rate
+- **Balanceo de carga** con 3 estrategias y health checks
+- **Monitoreo de recursos** del sistema (CPU, memoria, disco, red)
+- **Alertas automáticas** cuando recursos exceden 80%
+
+### 7.3 Casos de Uso Organizacionales
 - **Gestión de inventario**: Análisis + reportes automatizados
 - **Optimización de turnos**: Planificación estratégica multi-agente
 - **Toma de decisiones**: Evaluación multi-criterio con adaptación
 - **Flujos integrados**: Automatización end-to-end de procesos
 
-## 7. Conclusiones
+## 8. Conclusiones
 
-### 7.1 Logros Principales
-El proyecto implementa exitosamente un sistema completo de agentes inteligentes que:
+### 8.1 Logros Principales
+El proyecto implementa exitosamente un sistema completo de agentes inteligentes de nivel productivo que:
 
-1. **Integra múltiples frameworks** de manera coherente y funcional
+#### Logros RA2:
+1. **Integra múltiples frameworks** (LangChain + CrewAI) de manera coherente y funcional
 2. **Mantiene memoria conversacional** adaptándose automáticamente a la complejidad
 3. **Planifica y adapta** estrategias según condiciones dinámicas cambiantes
 4. **Automatiza flujos organizacionales** complejos de extremo a extremo
 
-### 7.2 Implementación y Validación
+#### Logros RA3:
+5. **Observabilidad completa** con logging, métricas y monitoreo de rendimiento
+6. **Trazabilidad integral** de todas las interacciones y flujos del sistema
+7. **Seguridad robusta** con validación, ética y rate limiting implementados
+8. **Escalabilidad garantizada** mediante caché, balanceo y monitoreo de recursos
+
+### 8.2 Implementación y Validación
 
 #### 7.2.1 Implementación Práctica
 - **API de Demostración**: Sistema funcional simulando comportamiento RAG real
@@ -198,19 +367,37 @@ El proyecto implementa exitosamente un sistema completo de agentes inteligentes 
 - **Integración Completa**: API + Interfaz Web + Documentación funcional
 - **Demostraciones**: `demo_flujos_automatizados.py` para casos de uso específicos
 
-### 7.3 Contribuciones Técnicas
+### 8.3 Contribuciones Técnicas
+
+#### Contribuciones RA2:
 - **Arquitectura modular**: Facilita mantenimiento y extensibilidad
 - **Sistema de memoria híbrido**: Optimiza recursos según contexto (Buffer/Window/Summary)
 - **Planificación adaptativa**: Responde dinámicamente a cambios contextuales
-- **Integración completa**: Demuestra orquestación efectiva de componentes LangChain + CrewAI
+- **Integración completa**: Orquestación efectiva de componentes LangChain + CrewAI
 - **Precisión en respuestas**: Sistema que no inventa información, maneja limitaciones correctamente
 
-### 7.4 Aplicabilidad Organizacional
-El sistema desarrollado proporciona valor real para automatización empresarial:
-- **Reducción de tiempo** en análisis y reportes (ejemplo: análisis inventario automatizado)
+#### Contribuciones RA3:
+- **Observabilidad en producción**: Logging estructurado, métricas y rendimiento para debugging
+- **Trazabilidad completa**: Auditoría de todas las operaciones con traces y conversaciones
+- **Seguridad multicapa**: Validación de entradas, filtros éticos y rate limiting por usuario
+- **Escalabilidad horizontal**: Caché LRU, balanceo de carga y monitoreo de recursos del sistema
+- **API unificada**: Integración coherente de todos los módulos RA1, RA2 y RA3
+
+### 8.4 Aplicabilidad Organizacional
+El sistema desarrollado proporciona valor real para automatización empresarial en entornos productivos:
+
+#### Valor RA2:
+- **Reducción de tiempo** en análisis y reportes (análisis inventario automatizado)
 - **Mejora en toma de decisiones** con información fundamentada (herramientas de razonamiento)
 - **Adaptabilidad** a condiciones cambiantes del negocio (planificación dinámica)
-- **Escalabilidad** para procesos organizacionales complejos (arquitectura multi-agente)
+- **Automatización multi-agente** para procesos organizacionales complejos
+
+#### Valor RA3:
+- **Monitoreo en tiempo real** de rendimiento y recursos del sistema
+- **Auditoría completa** de interacciones para cumplimiento normativo
+- **Protección de usuarios** con validación de seguridad y filtros éticos
+- **Optimización de costos** mediante caché inteligente y balanceo de carga
+- **Preparado para producción** con todos los módulos de calidad implementados
 
 ---
 
