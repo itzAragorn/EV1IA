@@ -262,20 +262,20 @@ if agent_mode == "individual":
                 
                 # Mostrar spinner
                 with st.spinner("🤖 El agente está procesando tu solicitud..."):
-                    # Llamar a la API del agente individual
-                    response = make_api_request("/agent/query", "POST", {
-                        "query": question,
+                    # Llamar al endpoint de chat (app_simple.py)
+                    response = make_api_request("/chat", "POST", {
+                        "message": question,
+                        "user_id": "streamlit_user",
                         "session_id": st.session_state["session_id"]
                     })
                 
                 # Procesar respuesta
                 if "error" not in response:
                     answer = response["response"]
-                    tools_used = response.get("tools_used", [])
+                    trace_id = response.get("trace_id", "N/A")
                     
-                    # Agregar información de herramientas usadas
-                    if tools_used:
-                        answer += f"\n\n🔧 **Herramientas utilizadas:** {', '.join(tools_used)}"
+                    # Agregar información de trazabilidad
+                    answer += f"\n\n📍 **Trace ID:** {trace_id}"
                 else:
                     answer = f"❌ Error: {response['error']}"
                 
@@ -290,7 +290,8 @@ if agent_mode == "individual":
     
     with col2:
         if st.button("📊 Info Sesión"):
-            info = make_api_request(f"/agent/sessions/{st.session_state['session_id']}/info")
+            # Obtener estadísticas de conversación
+            info = make_api_request("/conversations")
             if "error" not in info:
                 st.json(info)
             else:

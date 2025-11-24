@@ -85,14 +85,15 @@ def query_rag(body: Query):
     """
     try:
         # Traceability
-        trace = global_trace_manager.start_trace("rag_query")
+        trace_id = global_trace_manager.start_trace("rag_query")
         
         # Metrics
         global_metrics.increment_counter("rag_queries_total")
         
         # Rate Limiting
-        if not global_rate_limiter.check_rate_limit(body.user_id, "query"):
-            raise HTTPException(status_code=429, detail="Rate limit excedido")
+        rate_ok, rate_msg = global_rate_limiter.check_rate_limit(body.user_id, "query")
+        if not rate_ok:
+            raise HTTPException(status_code=429, detail=rate_msg or "Rate limit excedido")
         
         # Input Validation
         is_valid, message = global_validator.validate(body.q)
@@ -120,28 +121,33 @@ def query_rag(body: Query):
         if not rag_chain:
             raise HTTPException(status_code=503, detail="Sistema RAG no disponible")
         
-        result = rag_chain.invoke({"query": body.q})
-        answer = result.get("result", "No se encontró respuesta")
+        try:
+            result = rag_chain.invoke({"query": body.q})
+            answer = result.get("result", "No se encontró respuesta")
+        except Exception as rag_error:
+            logger.error(f"Error en RAG invoke: {str(rag_error)}")
+            raise HTTPException(status_code=503, detail=f"Error en sistema RAG: {str(rag_error)}")
         
         # Guardar en caché
         global_cache_manager.set(cache_key, answer, ttl=3600)
         
         # Conversation tracking
         global_conversation_tracker.add_turn(
+            conversation_id=body.user_id,
             user_message=body.q,
-            assistant_message=answer,
-            tool_used="rag_query"
+            agent_response=answer,
+            tools_used=["rag_query"]
         )
         
         # End trace
-        global_trace_manager.end_trace(trace.trace_id, {"answer_length": len(answer)})
+        global_trace_manager.end_trace(trace_id, status="success")
         
         logger.info(f"✅ Query procesada: {body.q[:50]}")
         
         return {
             "answer": answer,
             "from_cache": False,
-            "trace_id": trace.trace_id
+            "trace_id": trace_id
         }
         
     except HTTPException:
@@ -164,14 +170,15 @@ def chat_endpoint(body: ChatMessage):
     """
     try:
         # Trace
-        trace = global_trace_manager.start_trace("chat")
+        trace_id = global_trace_manager.start_trace("chat")
         
         # Metrics
         global_metrics.increment_counter("chat_messages_total")
         
         # Rate limit
-        if not global_rate_limiter.check_rate_limit(body.user_id, "query"):
-            raise HTTPException(status_code=429, detail="Rate limit excedido")
+        rate_ok, rate_msg = global_rate_limiter.check_rate_limit(body.user_id, "query")
+        if not rate_ok:
+            raise HTTPException(status_code=429, detail=rate_msg or "Rate limit excedido")
         
         # Validación
         is_valid, message = global_validator.validate(body.message)
@@ -185,27 +192,32 @@ def chat_endpoint(body: ChatMessage):
         else:
             # Procesar con RAG si está disponible
             if rag_chain:
-                result = rag_chain.invoke({"query": body.message})
-                response = result.get("result", "Procesando tu consulta...")
+                try:
+                    result = rag_chain.invoke({"query": body.message})
+                    response = result.get("result", "Procesando tu consulta...")
+                except Exception as rag_error:
+                    logger.error(f"Error en RAG: {str(rag_error)}")
+                    response = f"Procesé tu consulta: '{body.message}'. (Nota: Sistema RAG temporalmente no disponible)"
             else:
                 response = f"Recibí tu mensaje: '{body.message}'. Sistema RAG no disponible."
         
         # Track conversation
         global_conversation_tracker.add_turn(
+            conversation_id=body.session_id,
             user_message=body.message,
-            assistant_message=response,
-            tool_used="chat"
+            agent_response=response,
+            tools_used=["chat"]
         )
         
         # End trace
-        global_trace_manager.end_trace(trace.trace_id, {"response_length": len(response)})
+        global_trace_manager.end_trace(trace_id, status="success")
         
         logger.info(f"✅ Chat procesado para user: {body.user_id}")
         
         return {
             "response": response,
             "session_id": body.session_id,
-            "trace_id": trace.trace_id,
+            "trace_id": trace_id,
             "timestamp": datetime.now().isoformat()
         }
         
