@@ -37,7 +37,7 @@ class EscrituraReporteTool(BaseTool):
     Útil para crear informes de inventario, análisis de turnos,
     reportes ejecutivos, y documentación técnica.
     """
-    args_schema = ReportInput
+    args_schema: type[BaseModel] = ReportInput
     
     def _run(self, titulo: str, contenido: str, tipo: str = "general", incluir_fecha: bool = True) -> str:
         """Genera un reporte estructurado."""
@@ -148,7 +148,7 @@ class AnalisisDatosTool(BaseTool):
     Puede analizar datos de inventario y turnos, generar estadísticas,
     identificar tendencias y crear resúmenes ejecutivos.
     """
-    args_schema = DataAnalysisInput
+    args_schema: type[BaseModel] = DataAnalysisInput
     
     def _run(self, dataset: str, tipo_analisis: str) -> str:
         """Ejecuta análisis de datos."""

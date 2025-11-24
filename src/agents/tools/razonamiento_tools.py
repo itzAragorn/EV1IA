@@ -36,7 +36,7 @@ class RazonamientoDecisionTool(BaseTool):
     Evalúa opciones, considera criterios múltiples y proporciona recomendaciones
     fundamentadas para la toma de decisiones organizacionales.
     """
-    args_schema = DecisionInput
+    args_schema: type[BaseModel] = DecisionInput
     
     def _run(self, problema: str, opciones: List[str], criterios: List[str] = None) -> str:
         """Ejecuta análisis de decisión estructurado."""
@@ -121,7 +121,7 @@ class PlanificacionEstrategicaTool(BaseTool):
     en tareas ejecutables. Considera restricciones, recursos y plazos
     para generar roadmaps organizacionales.
     """
-    args_schema = PlanificacionInput
+    args_schema: type[BaseModel] = PlanificacionInput
     
     def _run(self, objetivo: str, restricciones: List[str] = None, recursos: List[str] = None, plazo: str = None) -> str:
         """Genera plan estratégico estructurado."""

@@ -15,5 +15,5 @@ if not defined GITHUB_TOKEN (
 set OPENAI_API_KEY=%GITHUB_TOKEN%
 echo Iniciando API CleanPro en puerto 8000...
 echo Usando GITHUB_TOKEN configurado en variables de entorno
-python -m uvicorn demo_api:app --reload --port 8000
+python -m uvicorn src.api.app_simple:app --reload --port 8000
 pause

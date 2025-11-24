@@ -28,7 +28,7 @@ class RAGConsultaTool(BaseTool):
     Útil para buscar información sobre inventario, turnos, políticas de empresa,
     procedimientos de limpieza, o cualquier información almacenada en la base de datos.
     """
-    args_schema = RAGQueryInput
+    args_schema: type[BaseModel] = RAGQueryInput
     
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
